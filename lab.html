@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Функции: Range, Reverse, MaskCard</title>
+</head>
+<body>
+  <h2>Открой консоль (F12 → Console), чтобы увидеть результат</h2>
+
+  <script>
+    // 1. Генерация массива диапазона
+    function getRange(start, end, step = 1) {
+      let result = [];
+      for (let i = start; i <= end; i += step) {
+        result.push(i);
+      }
+      return result;
+    }
+
+    // 2. Переворот строки (без reverse)
+    function myReverse(str) {
+      let result = "";
+      for (let i = str.length - 1; i >= 0; i--) {
+        result += str[i];
+      }
+      return result;
+    }
+
+    // 3. Маскировка номера карты
+    function maskCard(cardNumber, maskSymbol = "X") {
+      let start = cardNumber.slice(0, 6);
+      let end = cardNumber.slice(-4);
+      let middle = maskSymbol.repeat(cardNumber.length - 10);
+      return start + middle + end;
+    }
+
+    // ===== Тесты =====
+    console.log("getRange(1, 10):", getRange(1, 10));
+    console.log("getRange(10, 30, 5):", getRange(10, 30, 5));
+
+    console.log("myReverse('123456789'):", myReverse("123456789"));
+
+    console.log("maskCard('4815154823541789'):", maskCard("4815154823541789"));
+    console.log("maskCard('4815154823541789', '*'):", maskCard("4815154823541789", "*"));
+  </script>
+</body>
+</html>
