@@ -1,47 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Функции: Range, Reverse, MaskCard</title>
+  <meta charset="utf-8" />
+  <title>Utils — getRange / myReverse / maskCard</title>
 </head>
 <body>
-  <h2>Открой консоль (F12 → Console), чтобы увидеть результат</h2>
+<script>
+  
+  function getRange(start, end, step) {
+    if (start === undefined || end === undefined) throw new Error("start and end required");
+    start = Number(start);
+    end = Number(end);
 
-  <script>
-    // 1. Генерация массива диапазона
-    function getRange(start, end, step = 1) {
-      let result = [];
-      for (let i = start; i <= end; i += step) {
-        result.push(i);
-      }
-      return result;
+    if (step === undefined || step === null) {
+      step = (start <= end) ? 1 : -1;
+    } else {
+      step = Number(step);
+      if (step === 0) throw new Error("step must not be 0");
     }
 
-    // 2. Переворот строки (без reverse)
-    function myReverse(str) {
-      let result = "";
-      for (let i = str.length - 1; i >= 0; i--) {
-        result += str[i];
-      }
-      return result;
+    if (start < end && step <= 0) throw new Error("step must be positive when start < end");
+    if (start > end && step >= 0) throw new Error("step must be negative when start > end");
+
+    const result = [];
+    if (step > 0) {
+      for (let v = start; v <= end; v += step) result.push(v);
+    } else {
+      for (let v = start; v >= end; v += step) result.push(v);
     }
+    return result;
+  }
 
-    // 3. Маскировка номера карты
-    function maskCard(cardNumber, maskSymbol = "X") {
-      let start = cardNumber.slice(0, 6);
-      let end = cardNumber.slice(-4);
-      let middle = maskSymbol.repeat(cardNumber.length - 10);
-      return start + middle + end;
+  
+  function myReverse(s) {
+    if (s === null || s === undefined) return s;
+    s = String(s);
+    let out = "";
+    for (let i = s.length - 1; i >= 0; i--) {
+      out += s.charAt(i);
     }
+    return out;
+  }
 
-    // ===== Тесты =====
-    console.log("getRange(1, 10):", getRange(1, 10));
-    console.log("getRange(10, 30, 5):", getRange(10, 30, 5));
 
-    console.log("myReverse('123456789'):", myReverse("123456789"));
+  function maskCard(card, maskChar = 'X') {
+    if (card === null || card === undefined) return card;
+    card = String(card);
+    const len = card.length;
+    if (len <= 10) return card;
+    const prefixLen = Math.min(6, len - 4);
+    const suffixLen = 4;
+    const maskLen = len - prefixLen - suffixLen;
+    let out = "";
+    out += card.slice(0, prefixLen);
+    for (let i = 0; i < maskLen; i++) out += maskChar;
+    out += card.slice(prefixLen + maskLen);
+    return out;
+  }
 
-    console.log("maskCard('4815154823541789'):", maskCard("4815154823541789"));
-    console.log("maskCard('4815154823541789', '*'):", maskCard("4815154823541789", "*"));
-  </script>
+  console.log("=== getRange ===");
+  console.log("getRange(1, 10) →", getRange(1, 10));
+  console.log("getRange(10, 30, 5) →", getRange(10, 30, 5));
+  console.log("getRange(10, 1, -2) →", getRange(10, 1, -2));
+
+  console.log("\n=== myReverse ===");
+  console.log("myReverse('123456789') →", myReverse("123456789"));
+  console.log("myReverse('hello world') →", myReverse("hello world"));
+
+  console.log("\n=== maskCard ===");
+  console.log("maskCard('4815154823541789') →", maskCard("4815154823541789"));
+  console.log("maskCard('4815154823541789', '*') →", maskCard("4815154823541789", '*'));
+  console.log("maskCard('1234567890') →", maskCard("1234567890"));
+</script>
 </body>
 </html>
