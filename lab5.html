@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Счётчик с анимацией по цифрам</title>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  .container {
+    height: 100vh;
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-size: 5rem;
+    user-select: none;
+    transition: background-color 0.5s ease;
+  }
+  #counter {
+    display: flex;
+    gap: 0.1em;
+  }
+  #counter span {
+    display: inline-block;
+    min-width: 1ch;
+    position: relative;
+  }
+  #counter span.digit {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  /* Анимация смены цифры */
+  #counter span.digit.animate {
+    animation: flipDigit 0.4s forwards;
+  }
+  @keyframes flipDigit {
+    0% {
+      transform: rotateX(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: rotateX(90deg);
+      opacity: 0;
+    }
+    51% {
+      transform: rotateX(-90deg);
+      opacity: 0;
+    }
+    100% {
+      transform: rotateX(0deg);
+      opacity: 1;
+    }
+  }
+  .buttons {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  button {
+    padding: 10px 25px;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  button:hover {
+    background-color: #ddd;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+    transform: scale(1.05);
+  }
+  button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    background-color: #ccc;
+    transition: transform 0.1s ease, background-color 0.1s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="counter-container">
+  <div id="counter">
+    <span class="digit" id="min1">0</span>
+    <span class="digit" id="min2">0</span>
+    <span>:</span>
+    <span class="digit" id="sec1">0</span>
+    <span class="digit" id="sec2">0</span>
+  </div>
+  <div class="buttons">
+    <button id="speed-plus">speed +</button>
+    <button id="reset">reset</button>
+    <button id="speed-minus">speed -</button>
+  </div>
+</div>
+
+<script>
+  const container = document.getElementById('counter-container');
+  const min1 = document.getElementById('min1');
+  const min2 = document.getElementById('min2');
+  const sec1 = document.getElementById('sec1');
+  const sec2 = document.getElementById('sec2');
+  const speedPlusBtn = document.getElementById('speed-plus');
+  const speedMinusBtn = document.getElementById('speed-minus');
+  const resetBtn = document.getElementById('reset');
+
+  let timeInSeconds = 0;
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2,'0')}${s.toString().padStart(2,'0')}`;
+  }
+
+  // Анимация смены одной цифры
+  function animateDigitChange(element, newDigit) {
+    if (element.textContent === newDigit) return; // не анимируем, если цифра не изменилась
+
+    // Добавляем класс анимации
+    element.classList.add('animate');
+
+    // В момент половины анимации меняем цифру
+    setTimeout(() => {
+      element.textContent = newDigit;
+    }, 200);
+
+    // Убираем класс по окончании анимации
+    element.addEventListener('animationend', () => {
+      element.classList.remove('animate');
+    }, { once: true });
+  }
+
+  function updateDisplay() {
+    const timeStr = formatTime(timeInSeconds);
+    // timeStr: 4 символа без двоеточия, например "0234"
+    // обновляем каждый спан по отдельности
+    animateDigitChange(min1, timeStr[0]);
+    animateDigitChange(min2, timeStr[1]);
+    animateDigitChange(sec1, timeStr[2]);
+    animateDigitChange(sec2, timeStr[3]);
+  }
+
+  function setInitialState() {
+    container.style.backgroundColor = 'gray';
+    min1.style.color = 'black';
+    min2.style.color = 'black';
+    sec1.style.color = 'black';
+    sec2.style.color = 'black';
+    timeInSeconds = 0;
+    updateDisplay();
+  }
+
+  setInitialState();
+
+  speedPlusBtn.addEventListener('click', () => {
+    timeInSeconds++;
+    container.style.backgroundColor = '#90ee90'; // светло-зеленый фон
+    [min1, min2, sec1, sec2].forEach(el => el.style.color = '#ff6961'); // светло-красный текст
+    updateDisplay();
+  });
+
+  speedMinusBtn.addEventListener('click', () => {
+    if(timeInSeconds > 0) timeInSeconds--;
+    container.style.backgroundColor = '#ffcccb'; // светло-красный фон
+    [min1, min2, sec1, sec2].forEach(el => el.style.color = '#90ee90'); // светло-зеленый текст
+    updateDisplay();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    setInitialState();
+  });
+</script>
+
+</body>
+</html>
